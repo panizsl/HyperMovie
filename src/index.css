@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+  font-family: "Roboto", serif;
+}
+
+.swiper-pagination {
+  position: relative !important;
+  bottom: -20px !important; /* مقدار را کم یا زیاد کن تا در جای مناسب قرار بگیره */
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
