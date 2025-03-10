@@ -12,7 +12,7 @@ export default function Footer() {
               className="h-12 mb-4"
             />
             <p className="text-sm">
-              The Movie Database (HyperMovie) is a popular, user editable
+              The Movie Database (MovieMate) is a popular, user editable
               database for movies and TV shows.
             </p>
           </div>
@@ -115,8 +115,8 @@ export default function Footer() {
         {/* بخش پایینی */}
         <div className="mt-8 text-center text-sm border-t border-gray-700 pt-6">
           <p>
-            © 2025 The Movie Database (HyperMovie). All rights reserved.
-            Designed by
+            © 2025 The Movie Database (MovieMate). All rights reserved. Designed
+            by
             <a href="#" className="text-blue-400 hover:text-blue-600 ml-1">
               Paniz
             </a>

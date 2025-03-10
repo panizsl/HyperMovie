@@ -72,26 +72,26 @@ export default function TvDetail() {
     <>
       <Navigation />
       <div className="container mx-auto p-6 text-white flex flex-col gap-8 mt-20">
-        <div className="flex gap-8">
+        <div className="flex  flex-col md:flex-row gap-8">
           {/* TV Show Poster */}
-          <div className="w-1/3">
+          <div className="w-full md:w-1/3">
             <img
               src={`https://image.tmdb.org/t/p/w500${tvShow.poster_path}`}
               alt={tvShow.name}
-              className="rounded-lg shadow-lg"
+              className="rounded-lg shadow-lg w-full"
             />
           </div>
 
           {/* TV Show Info */}
-          <div className="w-2/3">
+          <div className="w-full md:w-2/3">
             <h1 className="text-3xl font-bold">
               {tvShow.name} ({tvShow.first_air_date?.split("-")[0]})
             </h1>
 
             {/* Genre & Duration */}
-            <div className="mt-2 text-gray-400 flex gap-4 items-center">
+            <div className="flex items-center gap-4 flex-wrap text-gray-400 mt-3">
               {/* Genres */}
-              <ul className="flex flex-wrap gap-2">
+              <ul className="flex flex-wrap gap-1">
                 {tvShow.genres?.map((genre) => (
                   <li key={genre.id}>
                     <Link
@@ -103,7 +103,7 @@ export default function TvDetail() {
                   </li>
                 ))}
               </ul>
-
+              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
               {/* Number of Seasons & Episodes */}
               <span className="text-sm">
                 📺 {tvShow.number_of_seasons} Seasons | 🎬{" "}

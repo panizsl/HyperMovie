@@ -7,7 +7,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link } from "react-router-dom";
-import Spinner from "../spinner";
 
 export default function HeaderSlider() {
   const [movies, setMovies] = useState([]);
@@ -31,7 +30,7 @@ export default function HeaderSlider() {
   }, [timeWindow]);
 
   return (
-    <div className="text-white p-6 md:mt-40 sm:mt-4">
+    <div className="text-white p-6 md:mt-20 sm:mt-10">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-4">
         <div>
@@ -67,9 +66,6 @@ export default function HeaderSlider() {
         slidesPerView={7}
         navigation
         modules={[Navigation, Pagination, Autoplay]}
-        Pagination={{
-          clickable: true,
-        }}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,

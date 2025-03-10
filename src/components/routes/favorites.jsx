@@ -1,15 +1,38 @@
 import React, { useState, useEffect } from "react";
-
+import { useNavigate } from "react-router-dom"; // اضافه کردن useNavigate
 import Navigation from "../header/navigation";
 import Footer from "../Footer";
 
 export default function Favorites() {
   const [favorites, setFavorites] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate(); // تعریف navigate
 
+  // هوک useEffect برای بررسی وضعیت ورود به سیستم
   useEffect(() => {
-    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    setFavorites(storedFavorites);
-  }, []);
+    const sessionId = localStorage.getItem("session_id");
+
+    if (!sessionId) {
+      setIsLoggedIn(false);
+      alert("Please log in to see your favorites!");
+      navigate("/login"); // هدایت به صفحه لاگین در صورت عدم وجود session_id
+    } else {
+      setIsLoggedIn(true);
+      // ذخیره‌سازی فیلم‌ها با استفاده از session_id
+      const storedFavorites =
+        JSON.parse(localStorage.getItem(`favorites-${sessionId}`)) || [];
+      setFavorites(storedFavorites);
+    }
+  }, [navigate]);
+
+  // اگر کاربر وارد نشده باشد، پیامی نمایش داده می‌شود
+  if (!isLoggedIn) {
+    return (
+      <div className="text-center text-white mt-20">
+        <h2>Please log in to see your favorites.</h2>
+      </div>
+    );
+  }
 
   return (
     <>

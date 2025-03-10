@@ -59,8 +59,8 @@ const Popular = () => {
   return (
     <>
       <Navigation />
-      <div className="container mx-auto p-6 text-white mt-10">
-        <h2 className="text-2xl text-white mb-4 mt-16 sm:mt-10">
+      <div className="container mx-auto p-6 text-white mt-6">
+        <h2 className=" text-2xl font-bold mb-8 text-white  mt-16 sm:mt-10">
           Popular Movies
         </h2>
 

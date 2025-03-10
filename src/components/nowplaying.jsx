@@ -24,6 +24,7 @@ const NowPlaying = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching Now Playing movies:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -50,8 +51,8 @@ const NowPlaying = () => {
   return (
     <>
       <Navigation />
-      <div className="container mx-auto p-6 text-white mt-10">
-        <h2 className="text-2xl text-white mb-4 mt-16 sm:mt-10">
+      <div className="container mx-auto p-6 text-white mt-6">
+        <h2 className=" text-white text-2xl font-bold mb-8 mt-16 sm:mt-10">
           Now Playing Movies
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">

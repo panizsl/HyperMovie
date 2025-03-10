@@ -1,0 +1,194 @@
+import React, { useState, useEffect } from "react";
+import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+
+export default function Navigation() {
+  const [activeItem, setActiveItem] = useState("Home");
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+      setIsLoggedIn(isLoggedIn);
+
+      if (isLoggedIn && currentUser) {
+        const storedFavorites =
+          JSON.parse(localStorage.getItem("favorites")) || [];
+        if (
+          currentUser.email &&
+          !storedFavorites.some((fav) => fav.user === currentUser.email)
+        ) {
+          localStorage.setItem(
+            "favorites",
+            JSON.stringify([
+              ...storedFavorites,
+              { user: currentUser.email, items: [] },
+            ])
+          );
+        }
+      }
+    };
+
+    checkLoginStatus();
+
+    window.addEventListener("storage", checkLoginStatus);
+
+    return () => {
+      window.removeEventListener("storage", checkLoginStatus);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("currentUser");
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
+  const menuItems = [
+    {
+      name: "Home",
+      path: "/",
+    },
+    {
+      name: "Movies",
+      subItems: ["Popular", "Now Playing", "Upcoming", "Top Rated"],
+    },
+    {
+      name: "TvShows",
+      subItems: ["PopularTv", "Airing Today", "On TV", "Top Rated TvShows"],
+    },
+  ];
+
+  return (
+    <nav className="flex items-center justify-between text-slate-300 p-6 md:bg-transparent md:relative fixed top-0 left-0 right-0 z-50 h-[70px] bg-gray-900">
+      <div className="flex items-center">
+        <h1 className="text-3xl mr-12">
+          Hyper<span className="text-rose-500">Movie</span>
+          <p className="text-xs text-center font-light text-slate-500">
+            Film Review
+          </p>
+        </h1>
+
+        <ul className="hidden md:flex text-sm lg:text-base gap-6 uppercase relative">
+          {menuItems.map((item) => (
+            <li
+              key={item.name}
+              className="relative group"
+              onMouseMove={() => setOpenDropdown(item.name)}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              {item.subItems ? (
+                <>
+                  <button
+                    onMouseMove={() => setActiveItem(item.name)}
+                    className={`relative pb-1 transition-colors ${
+                      activeItem === item.name ? "text-white" : "text-gray-400"
+                    } hover:text-white`}
+                  >
+                    {item.name}
+                    <span
+                      className={`absolute left-0 bottom-0 w-full h-[2px] bg-white transition-transform duration-300 ${
+                        activeItem === item.name ? "scale-x-100" : "scale-x-0"
+                      } hover:scale-x-100`}
+                    ></span>
+                  </button>
+
+                  <ul
+                    className={`absolute left-0 top-full mt-2 w-48 bg-gray-800 rounded-md shadow-lg transition-all duration-300 p-2 ${
+                      openDropdown === item.name
+                        ? "opacity-100 visible"
+                        : "opacity-0 invisible"
+                    }`}
+                  >
+                    {item.subItems.map((subItem) => (
+                      <li key={subItem}>
+                        <Link
+                          to={`/${subItem.replace(/\s+/g, "-").toLowerCase()}`}
+                          className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded"
+                        >
+                          {subItem}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <Link
+                  to={item.path}
+                  className={`relative pb-1 transition-colors ${
+                    activeItem === item.name ? "text-white" : "text-gray-400"
+                  } hover:text-white`}
+                  onClick={() => setActiveItem(item.name)}
+                >
+                  {item.name}
+                  <span
+                    className={`absolute left-0 bottom-0 w-full h-[2px] bg-white transition-transform duration-300 ${
+                      activeItem === item.name ? "scale-x-100" : "scale-x-0"
+                    } hover:scale-x-100`}
+                  ></span>
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="md:hidden">
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
+        </button>
+        {isMenuOpen && (
+          <div className="absolute top-[70px] right-0 w-64 bg-gray-800 p-6 rounded-l-lg flex flex-col items-center">
+            {menuItems.map((item) => (
+              <div key={item.name} className="text-white text-center mb-4">
+                <button
+                  onClick={() =>
+                    setOpenDropdown(
+                      openDropdown === item.name ? null : item.name
+                    )
+                  }
+                >
+                  {item.name}
+                </button>
+                {item.subItems && openDropdown === item.name && (
+                  <div className="mt-2">
+                    {item.subItems.map((subItem) => (
+                      <Link
+                        key={subItem}
+                        to={`/${subItem.replace(/\s+/g, "-").toLowerCase()}`}
+                        className="block text-gray-300 hover:text-white"
+                      >
+                        {subItem}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            {!isLoggedIn && (
+              <>
+                <Link to="/login" className="text-white mb-2 md:block">
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-rose-700 px-4 py-2 rounded-xl text-white md:block"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+}

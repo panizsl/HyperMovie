@@ -1,87 +1,108 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+const API_KEY = "8c17983b4cac457349207fb55ae925ad";
 
 export default function Login() {
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  // مرحله 1: دریافت request_token از TMDb
+  const getRequestToken = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/authentication/token/new?api_key=${API_KEY}`
+      );
+      const data = await response.json();
+      console.log("Reque token:", data);
+      if (data.request_token) {
+        // هدایت به صفحه‌ی تأیید TMDb با بازگشت به سایت شما
+        window.location.href = `https://www.themoviedb.org/authenticate/${data.request_token}?redirect_to=${window.location.origin}/callback`;
+      } else {
+        setError("Error getting request token");
+      }
+    } catch (error) {
+      console.error("Request Token Error:", error);
+      setError("Failed to connect to TMDb API");
+    }
+  };
+
+  // مرحله 3: دریافت session_id بعد از تأیید کاربر
+  const createSession = async (requestToken) => {
+    try {
+      console.log("Sending request with token:", requestToken);
+
+      const response = await fetch(
+        `https://api.themoviedb.org/3/authentication/session/new?api_key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ request_token: requestToken }),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Session Response:", data);
+
+      if (data.success) {
+        localStorage.setItem("session_id", data.session_id);
+        console.log("Session ID Stored:", data.session_id);
+        localStorage.setItem("user_email", userData.email); // ذخیره ایمیل کاربر
+        alert("Login successful!");
+        navigate("/");
+      } else {
+        console.error("Error Creating Session:", data.status_message);
+        setError(data.status_message || "Error creating session");
+      }
+    } catch (error) {
+      console.error("🔥 Fetch Error:", error);
+      setError("Failed to create session");
+    }
+  };
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const approvedToken = urlParams.get("request_token");
+    const approved = urlParams.get("approved");
+
+    console.log("Approved Token:", approvedToken); // چک کردن مقدار
+    console.log("Approved Status:", approved); // چک کردن مقدار
+
+    if (approvedToken && approved === "true") {
+      createSession(approvedToken);
+    }
+  }, []);
+
   return (
-    <>
-      <div className="flex mt-4 min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h1 className="text-3xl mt-10 text-center font-bold tracking-tight text-white">
-            Hyper<span className="text-rose-500">Movie</span>
-          </h1>
+    <div className="flex min-h-screen items-center justify-center bg-gray-900">
+      <div className="sm:w-full sm:max-w-md">
+        <h1 className="text-3xl text-center font-bold text-white mb-8">
+          Movie<span className="text-rose-500">Mate</span>
+        </h1>
 
-          <h2 className="mt-3 text-center text-2xl/9 tracking-tight text-white">
-            Sign in to your account
-          </h2>
-        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            getRequestToken();
+          }}
+          className="space-y-6 bg-gray-800 p-8 rounded-lg shadow-lg"
+        >
+          {error && <p className="text-red-500">{error}</p>}
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm/6 font-medium text-white"
-              >
-                Email address
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-rose-500 sm:text-sm/6"
-                />
-              </div>
-            </div>
+          <button
+            type="submit"
+            className="w-full rounded-md bg-rose-500 px-4 py-2 text-white font-semibold hover:bg-rose-600 transition"
+          >
+            Login
+          </button>
+        </form>
 
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm/6 font-medium text-white"
-                >
-                  Password
-                </label>
-                <div className="text-sm">
-                  <a href="#" className="font-semibold text-rose-500 ">
-                    Forgot password?
-                  </a>
-                </div>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  autoComplete="current-password"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-rose-500 sm:text-sm/6"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-rose-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-rose-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
-              >
-                Sign in
-              </button>
-            </div>
-          </form>
-
-          <p className="mt-10 text-center text-sm/6 text-gray-500">
-            You're not registered?{" "}
-            <Link
-              to="/signup"
-              className="font-semibold text-rose-500 hover:text-rose-600"
-            >
-              Sign up
-            </Link>
-          </p>
-        </div>
+        <p className="mt-6 text-center text-sm text-gray-400">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-rose-500 hover:text-rose-600">
+            Sign up
+          </Link>
+        </p>
       </div>
-    </>
+    </div>
   );
 }

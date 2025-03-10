@@ -11,6 +11,11 @@ import PopularTvShows from "./components/populartvshows";
 import TvDetail from "./components/tvdetail";
 import Genres from "./components/genres";
 import Favorites from "./components/routes/favorites";
+import AiringToday from "./components/airingtoday";
+import AiringTodayTvShows from "./components/airingtoday";
+import OnTv from "./components/onTv";
+import TopRatedTvShows from "./components/topRatedTvShows";
+import Callback from "./components/callback";
 
 const router = createBrowserRouter([
   {
@@ -65,6 +70,22 @@ const router = createBrowserRouter([
   {
     path: "/favorites",
     element: <Favorites />,
+  },
+  {
+    path: "/airing-today",
+    element: <AiringTodayTvShows />,
+  },
+  {
+    path: "/on-tv",
+    element: <OnTv />,
+  },
+  {
+    path: "/top-rated-tvshows",
+    element: <TopRatedTvShows />,
+  },
+  {
+    path: "/callback",
+    element: <Callback />,
   },
 ]);
 

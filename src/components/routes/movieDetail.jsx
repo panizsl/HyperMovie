@@ -4,7 +4,7 @@ import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import Navigation from "../header/navigation";
 import Footer from "../Footer";
 
-export default function MediaDetail() {
+export default function MovieDetail() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -12,6 +12,30 @@ export default function MediaDetail() {
   const [trailerKey, setTrailerKey] = useState("");
 
   const mediaType = location.pathname.includes("/movie/") ? "movie" : "tv";
+
+  const addToFavorites = () => {
+    // بررسی اینکه آیا کاربر لاگین کرده است
+    const sessionId = localStorage.getItem("session_id");
+    if (!sessionId) {
+      alert("Please log in to add to favorites!");
+      return;
+    }
+
+    // دریافت علاقه‌مندی‌های قبلی از localStorage
+    const userFavoritesKey = `favorites-${sessionId}`;
+    const userFavorites =
+      JSON.parse(localStorage.getItem(userFavoritesKey)) || [];
+
+    // بررسی اینکه فیلم قبلاً اضافه شده است یا خیر
+    if (!userFavorites.some((fav) => fav.id === media.id)) {
+      userFavorites.push(media);
+      localStorage.setItem(userFavoritesKey, JSON.stringify(userFavorites)); // ذخیره در localStorage
+      alert("Added to favorites!");
+      navigate("/favorites"); // هدایت به صفحه علاقه‌مندی‌ها
+    } else {
+      alert("Already in favorites!");
+    }
+  };
 
   useEffect(() => {
     const fetchMediaDetails = async () => {
@@ -58,40 +82,30 @@ export default function MediaDetail() {
     return <p className="text-white text-center mt-20">Loading...</p>;
   }
 
-  const addToFavorites = () => {
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-
-    if (!favorites.some((fav) => fav.id === media.id)) {
-      favorites.push(media);
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-      alert("Added to favorites!");
-      navigate("/favorites"); // هدایت به صفحه علاقه‌مندی‌ها
-    } else {
-      alert("Already in favorites!");
-    }
-  };
-
   return (
     <>
       <Navigation />
       <div className="container mx-auto p-6 text-white flex flex-col gap-8 mt-20">
-        <div className="flex gap-8">
-          <div className="w-1/3">
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="w-full md:w-1/3">
             <img
               src={`https://image.tmdb.org/t/p/w500${media.poster_path}`}
               alt={media.title || media.name}
-              className="rounded-lg shadow-lg"
+              className="rounded-lg shadow-lg w-full"
             />
           </div>
-          <div className="w-2/3">
+
+          <div className="w-full md:w-2/3">
             <h1 className="text-3xl font-bold">
               {media.title || media.name} (
               {media.release_date?.split("-")[0] ||
                 media.first_air_date?.split("-")[0]}
               )
             </h1>
-            <div className="mt-2 text-gray-400">
-              <div className="flex items-center gap-4">
+
+            {/* Genre & Duration */}
+            <div className="mt-3 text-gray-400">
+              <div className="flex items-center gap-4 flex-wrap ">
                 <ul className="flex flex-wrap gap-1">
                   {media.genres?.map((genre) => (
                     <li key={genre.id}>
@@ -104,6 +118,9 @@ export default function MediaDetail() {
                     </li>
                   ))}
                 </ul>
+
+                <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+
                 {media.runtime && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-300">
@@ -125,13 +142,16 @@ export default function MediaDetail() {
                 ⭐ Add to Favorites
               </button>
             </div>
+
             <p className="text-gray-400 mt-2">⭐ {media.vote_average} / 10</p>
             <p className="text-gray-400">
               📅 Release Date: {media.release_date || media.first_air_date}
             </p>
+
             <h2 className="text-xl font-bold mt-6">Overview</h2>
             <p className="text-gray-300 mb-10">{media.overview}</p>
-            <div className="flex items-center gap-8">
+
+            <div className="flex items-center md:flex-row gap-8">
               <p className="text-gray-200">
                 <strong>Director:</strong> {media.director}
               </p>

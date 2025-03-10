@@ -35,8 +35,6 @@ export default function Genres() {
     fetchByGenre();
   }, [id]);
 
-  
-
   if (loading) {
     return <p className="text-white text-center mt-20">Loading...</p>;
   }
@@ -45,7 +43,7 @@ export default function Genres() {
     <>
       <Navigation />
       <div className="container mx-auto px-6 py-10 text-white mt-15">
-        {/* بخش فیلم‌ها بالاتر قرار گرفت */}
+        {/* بخش فیلم‌ها با نمایش ژانر */}
         <h2 className="text-2xl font-semibold mb-4">🎬 Movies</h2>
         <div className="flex flex-col gap-4">
           {movies.map((movie) => (
@@ -57,13 +55,18 @@ export default function Genres() {
                 <img
                   src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
                   alt={movie.title}
-                  className="w-40 h-52 object-cover rounded-lg cursor-pointer"
+                  className="w-36 h-52 object-cover rounded-lg"
                 />
               </Link>
               <div className="ml-4 flex flex-col gap-2 max-h-56 overflow-hidden">
                 <h3 className="text-xl font-semibold">{movie.title}</h3>
                 <p className="text-gray-400">
                   📅 {movie.release_date || "No Date"}
+                </p>
+                <p className="text-gray-400">
+                  🏷️{" "}
+                  {movie.genres?.map((genre) => genre.name).join(", ") ||
+                    "No Genres"}
                 </p>
                 <p className="text-gray-300 text-sm line-clamp-3">
                   {movie.overview || "No overview available"}
@@ -84,12 +87,17 @@ export default function Genres() {
               <img
                 src={`https://image.tmdb.org/t/p/w300${tv.poster_path}`}
                 alt={tv.name}
-                className="w-36 h-52 object-cover rounded-lg"
+                className="w-40 h-52 object-cover rounded-lg"
               />
               <div className="ml-4 flex flex-col gap-2 max-h-56 overflow-hidden">
                 <h3 className="text-xl font-semibold">{tv.name}</h3>
                 <p className="text-gray-400">
                   📅 {tv.first_air_date || "No Date"}
+                </p>
+                <p className="text-gray-400">
+                  🏷️{" "}
+                  {tv.genres?.map((genre) => genre.name).join(", ") ||
+                    "No Genres"}
                 </p>
                 <p className="text-gray-300 text-sm line-clamp-3">
                   {tv.overview || "No overview available"}

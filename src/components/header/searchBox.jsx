@@ -1,62 +1,55 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { DiRequirejs } from "react-icons/di";
 
 export default function SearchBox() {
-  const [query, setQuery] = useState(""); // مقدار ورودی جستجو
-  const [results, setResults] = useState([]); // ذخیره نتایج جستجو
-  const API_KEY = "8c17983b4cac457349207fb55ae925ad"; // 🔹 کلید API خود را اینجا بگذارید
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const API_KEY = "8c17983b4cac457349207fb55ae925ad";
 
   useEffect(() => {
     if (query.trim() === "") {
-      setResults([]); // اگر ورودی خالی بود، نتایج را پاک کن
+      setResults([]);
       return;
     }
 
     const fetchResults = async () => {
       try {
-        // 1️⃣ درخواست برای دریافت فیلم‌ها
-        const movieResponse = axios.get(
-          `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}`
-        );
-
-        // 2️⃣ درخواست برای دریافت سریال‌ها
-        const tvResponse = axios.get(
-          `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${query}`
-        );
-
-        // 3️⃣ منتظر پاسخ هر دو درخواست باش
         const [movies, tvShows] = await Promise.all([
-          movieResponse,
-          tvResponse,
+          axios.get(
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}`
+          ),
+          axios.get(
+            `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${query}`
+          ),
         ]);
 
-        // 4️⃣ ترکیب نتایج فیلم‌ها و سریال‌ها
         const combinedResults = [
-          ...movies.data.results.map((item) => ({ ...item, type: "movie" })), // اضافه کردن نوع
-          ...tvShows.data.results.map((item) => ({ ...item, type: "tv" })), // اضافه کردن نوع
+          ...movies.data.results.map((item) => ({ ...item, type: "movie" })),
+          ...tvShows.data.results.map((item) => ({ ...item, type: "tv" })),
         ];
 
-        setResults(combinedResults); // ذخیره همه نتایج
+        setResults(combinedResults);
       } catch (error) {
         console.error("Error fetching search results:", error);
       }
     };
 
     fetchResults();
-  }, [query]); // اجرای جستجو در هنگام تغییر query
+  }, [query]);
 
   return (
-    <section className="mt-20 text-slate-100 md:mt-30">
-      <div className="relative md:ml-4 md:mt-4 w-full">
+    <section className="relative mt-32 sm:mt-40 max-md:mt-20 md:mt-60 text-slate-100">
+      {/* تصویر پس‌زمینه */}
+
+      <div className="relative w-full md:ml-4 md:mt-4">
         {/* کادر جستجو */}
         <input
           type="text"
           placeholder="Search for a movie or TV show..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-slate-600 p-3 sm:p-1 text-base md:text-sm rounded-3xl border-0 focus:outline-none placeholder:text-slate-400 placeholder:text-sm md:placeholder:text-base"
+          className="w-full p-3 sm:p-1 text-base md:text-sm rounded-3xl  placeholder:text-slate-300 bg-[rgba(10,25,47,0.5)] backdrop-blur-lg focus:outline-none hover:bg-[rgba(15,35,65,0.7)]"
         />
 
         {/* آیکون جستجو */}
@@ -80,7 +73,7 @@ export default function SearchBox() {
             {results.map((item) => (
               <li key={item.id} className="mb-2">
                 <Link
-                  to={`/${item.type}/${item.id}`} // 🔹 لینک مخصوص فیلم و سریال
+                  to={`/${item.type}/${item.id}`}
                   className="flex items-center gap-3 p-2 hover:bg-gray-700 rounded transition"
                 >
                   <img
@@ -89,7 +82,7 @@ export default function SearchBox() {
                         ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
                         : "https://via.placeholder.com/92x138?text=No+Image"
                     }
-                    alt={item.title || item.name} // 🔹 برای سریال‌ها `name` استفاده می‌شود
+                    alt={item.title || item.name}
                     className="w-12 h-16 rounded"
                   />
                   <div>
