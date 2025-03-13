@@ -28,7 +28,7 @@ const router = createBrowserRouter([
   },
   ,
   {
-    path: "/movie/:id", // مقدار `id` داینامیک شد
+    path: "/:mediaType/:id", // مقدار `id` داینامیک شد
     element: <MovieDetail />,
   },
   {

@@ -8,26 +8,64 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link } from "react-router-dom";
 
+const API_KEY = "8c17983b4cac457349207fb55ae925ad";
+
 export default function HeaderSlider() {
   const [movies, setMovies] = useState([]);
-
-  const [timeWindow, setTimeWindow] = useState("day"); // Default to "day"
-  const [loading, setloading] = useState(true);
+  const [timeWindow, setTimeWindow] = useState("day");
+  const [loading, setLoading] = useState(true);
+  const [selectedMovie, setSelectedMovie] = useState(null); // فیلم انتخاب‌شده
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     const fetchTrending = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
-          `https://api.themoviedb.org/3/trending/all/${timeWindow}?api_key=8c17983b4cac457349207fb55ae925ad`
+          `https://api.themoviedb.org/3/trending/all/${timeWindow}?api_key=${API_KEY}`
         );
         setMovies(response.data.results);
       } catch (error) {
         console.error("Error fetching trending movies:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchTrending();
   }, [timeWindow]);
+
+  useEffect(() => {
+    if (query.trim() === "") {
+      setResults([]);
+      return;
+    }
+
+    const fetchResults = async () => {
+      try {
+        const [movies, tvShows] = await Promise.all([
+          axios.get(
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}`
+          ),
+          axios.get(
+            `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${query}`
+          ),
+        ]);
+
+        const combinedResults = [
+          ...movies.data.results.map((item) => ({ ...item, type: "movie" })),
+          ...tvShows.data.results.map((item) => ({ ...item, type: "tv" })),
+        ];
+
+        setResults(combinedResults);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
+    };
+
+    fetchResults();
+  }, [query]);
 
   return (
     <div className="text-white p-6 md:mt-20 sm:mt-10">
@@ -82,7 +120,7 @@ export default function HeaderSlider() {
         {movies.map((movie) => (
           <SwiperSlide key={movie.id} className="flex flex-col items-center">
             {/* Movie Poster */}
-            <Link to={`/movie/${movie.id}`}>
+            <Link to={`/${movie.media_type}/${movie.id}`}>
               <img
                 src={
                   movie.poster_path
