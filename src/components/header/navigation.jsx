@@ -143,11 +143,6 @@ export default function Navigation() {
                       } hover:text-white`}
                     >
                       {item.name}
-                      <span
-                        className={`absolute left-0 bottom-0 w-full h-[2px] bg-white transition-transform duration-300 ${
-                          activeItem === item.name ? "scale-x-100" : "scale-x-0"
-                        } hover:scale-x-100`}
-                      ></span>
                     </button>
 
                     {/* Dropdown */}
