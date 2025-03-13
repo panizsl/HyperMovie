@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Navigation from "./header/navigation";
 import Footer from "./Footer";
 
 export default function TvDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   console.log("Genre ID:", id);
 
   const [tvShow, setTvShow] = useState(null);
   const [trailerKey, setTrailerKey] = useState("");
   const [cast, setCast] = useState([]);
+  const [media, setMedia] = useState(null);
 
   useEffect(() => {
     const fetchTvShowDetails = async () => {
@@ -38,6 +40,7 @@ export default function TvDetail() {
 
         setTvShow({ ...tvData, director, producer });
         setCast(castData);
+        setMedia(tvData); // Set media here so it's available when adding to favorites
 
         const officialTrailer = videoResponse.data.results.find(
           (video) => video.type === "Trailer" && video.site === "YouTube"
@@ -53,26 +56,35 @@ export default function TvDetail() {
     fetchTvShowDetails();
   }, [id]);
 
-  if (!tvShow)
-    return <p className="text-white text-center mt-20">Loading...</p>;
-
-  // اضافه کردن فیلم به علاقه‌مندی‌ها
   const addToFavorites = () => {
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    if (!favorites.some((fav) => fav.id === tvShow.id)) {
-      favorites.push(tvShow);
-      localStorage.setItem("favorites", JSON.stringify(favorites));
+    const sessionId = localStorage.getItem("session_id");
+    if (!sessionId) {
+      alert("Please log in to add to favorites!");
+      return;
+    }
+
+    const userFavoritesKey = `favorites-${sessionId}`;
+    const userFavorites =
+      JSON.parse(localStorage.getItem(userFavoritesKey)) || [];
+
+    if (media && !userFavorites.some((fav) => fav.id === media.id)) {
+      userFavorites.push(media);
+      localStorage.setItem(userFavoritesKey, JSON.stringify(userFavorites)); // Save to localStorage
       alert("Added to favorites!");
+      navigate("/favorites"); // Navigate to favorites page
     } else {
       alert("Already in favorites!");
     }
   };
 
+  if (!tvShow)
+    return <p className="text-white text-center mt-20">Loading...</p>;
+
   return (
     <>
       <Navigation />
       <div className="container mx-auto p-6 text-white flex flex-col gap-8 mt-20">
-        <div className="flex  flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-8">
           {/* TV Show Poster */}
           <div className="w-full md:w-1/3">
             <img
