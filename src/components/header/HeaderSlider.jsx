@@ -46,10 +46,10 @@ export default function HeaderSlider() {
       try {
         const [movies, tvShows] = await Promise.all([
           axios.get(
-            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}`
+            `https://api.themoviedb.org/3/movie?api_key=${API_KEY}&query=${query}`
           ),
           axios.get(
-            `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${query}`
+            `https://api.themoviedb.org/3/tv?api_key=${API_KEY}&query=${query}`
           ),
         ]);
 

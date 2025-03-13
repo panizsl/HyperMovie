@@ -7,8 +7,9 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link } from "react-router-dom";
 
+const API_KEY = "8c17983b4cac457349207fb55ae925ad";
+
 const categories = [
-  { name: "Popular", endpoint: "/movie/popular" },
   { name: "Streaming", endpoint: "/movie/upcoming" },
   { name: "On TV", endpoint: "/tv/popular" },
   { name: "For Rent", endpoint: "/movie/top_rated" },
@@ -20,29 +21,80 @@ export default function CategorySlider() {
     categories[0].endpoint
   );
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
 
-  // Fetch movies for selected category
+  // تعیین نوع رسانه (movie یا tv)
+  const getMediaType = (category) =>
+    category.includes("/tv") ? "tv" : "movie";
+
+  // دریافت فیلم‌ها براساس دسته‌بندی
   useEffect(() => {
     const fetchMovies = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
-          `https://api.themoviedb.org/3${selectedCategory}?api_key=8c17983b4cac457349207fb55ae925ad`
+          `https://api.themoviedb.org/3${selectedCategory}?api_key=${API_KEY}`
         );
         setMovies(response.data.results);
       } catch (error) {
         console.error("Error fetching movies:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMovies();
   }, [selectedCategory]);
 
-  return (
-    <div className="text-white p-6 ">
-      {/* Section Title */}
-      <h2 className="text-2xl font-bold mb-4">Latest Trailers</h2>
+  // دریافت نتایج جستجو
+  useEffect(() => {
+    if (query.trim() === "") {
+      setResults([]);
+      return;
+    }
 
-      {/* Category Tabs */}
+    const fetchResults = async () => {
+      try {
+        const [movies, tvShows] = await Promise.all([
+          axios.get(
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}`
+          ),
+          axios.get(
+            `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${query}`
+          ),
+        ]);
+
+        const combinedResults = [
+          ...movies.data.results.map((item) => ({
+            ...item,
+            media_type: "movie",
+          })),
+          ...tvShows.data.results.map((item) => ({
+            ...item,
+            media_type: "tv",
+          })),
+        ];
+
+        setResults(combinedResults);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
+    };
+
+    fetchResults();
+  }, [query]);
+
+  const handleClick = (id) => {
+    console.log("Clicked ID: ", id); // چاپ آیدی در کنسول
+  };
+
+  return (
+    <div className="text-white p-6">
+      <h2 className="text-2xl font-bold mb-4">What's Popular</h2>
+
+      {/* دسته‌بندی‌ها */}
       <div className="flex items-center mb-6">
         <div className="flex border border-gray-700 rounded-lg overflow-hidden">
           {categories.map((category, index) => (
@@ -67,7 +119,7 @@ export default function CategorySlider() {
         </div>
       </div>
 
-      {/* Swiper Slider */}
+      {/* اسلایدر */}
       <Swiper
         spaceBetween={20}
         slidesPerView={4}
@@ -91,38 +143,30 @@ export default function CategorySlider() {
             key={movie.id}
             className="flex flex-col items-center group relative w-48 cursor-pointer"
           >
-            {/* Movie Background Hover */}
-            <div
-              className="absolute inset-0 bg-cover bg-center opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-              style={{
-                backgroundImage: movie.backdrop_path
-                  ? `url(https://image.tmdb.org/t/p/w500${movie.backdrop_path})`
-                  : "",
-              }}
-            ></div>
+            {/* پوستر و لینک */}
+            {movie.poster_path && (
+              <Link to={`/${getMediaType(selectedCategory)}/${movie.id}`}>
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title || movie.name}
+                  className="rounded-lg shadow-lg mb-2 z-10"
+                />
+              </Link>
+            )}
 
-            {/* Movie Poster */}
-            <Link to={`/movie/${movie.id}`}>
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title || movie.name}
-                className="rounded-lg shadow-lg mb-2 z-10"
-              />
-            </Link>
-
-            {/* Movie Title */}
+            {/* عنوان */}
             <h3 className="text-center text-sm font-medium z-10">
               {movie.title || movie.name}
             </h3>
 
-            {/* Release Date */}
+            {/* تاریخ انتشار */}
             <p className="text-center text-xs text-gray-400 z-10">
               {movie.release_date || movie.first_air_date || "No Date"}
             </p>
           </SwiperSlide>
         ))}
-        <div className="swiper-pagination absolute bottom-[-25px] left-0 right-0 flex justify-center"></div>
       </Swiper>
+
       <div className="custom-pagination swiper-pagination"></div>
     </div>
   );

@@ -35,6 +35,12 @@ const router = createBrowserRouter([
     path: "/tv/:id", // مقدار `id` داینامیک شد
     element: <TvDetail />,
   },
+
+  {
+    path: "/movie/:id",
+    element: <MovieDetail />,
+  },
+
   {
     path: "/login",
     element: <Login />,
