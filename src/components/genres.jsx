@@ -76,7 +76,7 @@ export default function Genres() {
           <button
             className={`px-4 py-2 rounded-lg ${
               selectedType === "movie"
-                ? "bg-blue-500 text-white"
+                ? "bg-rose-700 text-white"
                 : "bg-gray-700 text-gray-300"
             }`}
             onClick={() => {
@@ -90,7 +90,7 @@ export default function Genres() {
           <button
             className={`px-4 py-2 rounded-lg ${
               selectedType === "tv"
-                ? "bg-blue-500 text-white"
+                ? "bg-rose-700 text-white"
                 : "bg-gray-700 text-gray-300"
             }`}
             onClick={() => {
