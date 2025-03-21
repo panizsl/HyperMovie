@@ -73,7 +73,7 @@ export default function Login() {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="sm:w-full sm:max-w-md">
         <h1 className="text-3xl text-center font-bold text-white mb-8">
           Movie<span className="text-rose-500">Mate</span>
@@ -84,7 +84,7 @@ export default function Login() {
             e.preventDefault();
             getRequestToken();
           }}
-          className="space-y-6 bg-gray-800 p-8 rounded-lg shadow-lg"
+          className="space-y-6p-8 rounded-lg shadow-lg"
         >
           {error && <p className="text-red-500">{error}</p>}
 

@@ -43,7 +43,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex flex-1 flex-col min-h-screen items-center justify-center bg-gray-900 px-6 py-12 lg:px-8">
+    <div className="flex flex-1 flex-col min-h-screen items-center justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h1 className="text-3xl mt-10 text-center font-bold tracking-tight text-white">
           Hyper<span className="text-rose-500">Movie</span>

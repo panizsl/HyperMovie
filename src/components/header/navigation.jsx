@@ -206,12 +206,25 @@ export default function Navigation() {
           <ul className="space-y-6 mt-24 flex flex-col items-center justify-center">
             {menuItems.map((item) => (
               <li key={item.name} className="w-full text-center">
-                <button
-                  onClick={() => handleMenuToggle(item.name)}
-                  className="hover:text-rose-500 w-full"
-                >
-                  {item.name}
-                </button>
+                {item.path ? (
+                  // نمایش لینک‌های Home و Favorite
+                  <Link
+                    to={item.path}
+                    onClick={() => setIsMenuOpen(false)} // بستن منوی همبرگری بعد از کلیک
+                    className="block hover:text-rose-500 w-full"
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  // نمایش دکمه‌های دارای زیرمنو (Movies, TvShows)
+                  <button
+                    onClick={() => handleMenuToggle(item.name)}
+                    className="hover:text-rose-500 w-full"
+                  >
+                    {item.name}
+                  </button>
+                )}
+
                 {item.subItems && openDropdown === item.name && (
                   <div className="space-y-4 mt-4">
                     {item.subItems.map((subItem) => (

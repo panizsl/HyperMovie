@@ -146,8 +146,8 @@ export default function Genres() {
           <>
             <h2 className="text-2xl font-semibold mb-4">📺 TV Shows</h2>
             {tvShows.length === 0 ? (
-              <p className="text-center text-gray-400">
-                ❌There are no tvShows in this genre!
+              <p className="text-gray-400">
+                ❌There are no TvShows in this genre!
               </p>
             ) : (
               <div className="flex flex-col gap-4">
