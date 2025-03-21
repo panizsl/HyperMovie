@@ -56,6 +56,11 @@ export default function TvDetail() {
     fetchTvShowDetails();
   }, [id]);
 
+
+
+
+
+
   const addToFavorites = () => {
     const sessionId = localStorage.getItem("session_id");
     if (!sessionId) {
